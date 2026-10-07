@@ -2,3 +2,16 @@
 /apply        https://siw.mycarsonline.com/apply-online/   302
 /finder       https://siw.mycarsonline.com/car-finder/   302
 /live         https://siw.mycarsonline.com/inventory/   302
+/about        /about-contact/   301
+/contact      /about-contact/#contact   301
+/about-us     /about-contact/   301
+/contact-us   /about-contact/#contact   301
+/privacy-policy  /privacy/   301
+/testimonials /about-contact/   301
+/apply-online https://siw.mycarsonline.com/apply-online/   302
+/inventory/toyota/corolla/418404/  /inventory/2016-toyota-corolla-418404/  301
+/inventory/land-rover/range-rover/339626/  /inventory/2017-land-rover-range-rover-339626/  301
+/inventory/chevrolet/equinox/383821/  /inventory/2018-chevrolet-equinox-383821/  301
+/inventory/dodge/journey/381259/  /inventory/2018-dodge-journey-381259/  301
+/inventory/dodge/grand-caravan-passenger/785778/  /inventory/2019-dodge-grand-caravan-passenger-785778/  301
+/inventory/chrysler/300/922237/  /inventory/2015-chrysler-300-922237/  301

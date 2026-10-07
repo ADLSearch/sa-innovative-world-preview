@@ -128,3 +128,85 @@
     if (typeof window.gtag === "function") window.gtag("event", p.event, p);
   });
 })();
+
+/* Inventory filters (progressive enhancement: all cards render without JS; ?make=&body=&max=&q=&sort= prefill) */
+(function () {
+  "use strict";
+  var form = document.querySelector("[data-inv-filter]");
+  var grid = document.querySelector("[data-inv-grid]");
+  if (!form || !grid) return;
+  var cards = [].slice.call(grid.querySelectorAll(".vcard"));
+  var original = cards.slice();
+  var count = document.querySelector("[data-inv-count]");
+  var empty = document.querySelector("[data-inv-empty]");
+  var params = new URLSearchParams(location.search);
+  ["q", "make", "body", "max", "sort"].forEach(function (k) {
+    var el = form.elements[k], v = params.get(k);
+    if (el && v) { el.value = v; }
+  });
+  function apply() {
+    var q = (form.elements.q.value || "").trim().toLowerCase();
+    var mk = form.elements.make.value, bd = form.elements.body.value, mx = +form.elements.max.value || 0, so = form.elements.sort.value;
+    var shown = 0;
+    cards.forEach(function (c) {
+      var ok = (!q || c.getAttribute("data-text").indexOf(q) > -1) &&
+        (!mk || c.getAttribute("data-make") === mk) && (!bd || c.getAttribute("data-body") === bd) &&
+        (!mx || (+c.getAttribute("data-price") > 0 && +c.getAttribute("data-price") <= mx));
+      c.hidden = !ok; if (ok) { shown++; c.classList.add("is-in"); }
+    });
+    var list = original.slice();
+    var key = { price_asc: ["data-price", 1], price_desc: ["data-price", -1], miles_asc: ["data-miles", 1], year_desc: ["data-year", -1], year_asc: ["data-year", 1] }[so];
+    if (key) list.sort(function (a, b) {
+      var x = +a.getAttribute(key[0]), y = +b.getAttribute(key[0]);
+      if (key[0] === "data-price") { if (!x) x = key[1] > 0 ? 1e9 : -1; if (!y) y = key[1] > 0 ? 1e9 : -1; }
+      return (x - y) * key[1];
+    });
+    list.forEach(function (c) { grid.appendChild(c); });
+    if (count) count.textContent = shown === cards.length ? "Showing all " + cards.length + " vehicles" : "Showing " + shown + " of " + cards.length + " vehicles";
+    if (empty) empty.hidden = shown !== 0;
+  }
+  form.addEventListener("input", apply);
+  form.addEventListener("change", apply);
+  form.addEventListener("submit", function (e) { e.preventDefault(); apply(); });
+  form.addEventListener("reset", function () { setTimeout(apply, 0); });
+  apply();
+})();
+
+/* Vehicle gallery: thumbnails swap the main image (links open the full image without JS) */
+(function () {
+  "use strict";
+  document.querySelectorAll("[data-gallery]").forEach(function (g) {
+    var main = g.querySelector(".g-main-img");
+    if (!main) return;
+    g.addEventListener("click", function (e) {
+      var a = e.target.closest("[data-gallery-thumb]");
+      if (!a) return;
+      e.preventDefault();
+      main.removeAttribute("srcset");
+      main.src = a.getAttribute("data-full");
+      main.width = +a.getAttribute("data-w"); main.height = +a.getAttribute("data-h");
+      main.alt = a.querySelector("img").alt;
+      g.querySelectorAll("[data-gallery-thumb]").forEach(function (x) { x.removeAttribute("aria-current"); });
+      a.setAttribute("aria-current", "true");
+    });
+  });
+})();
+
+/* Payment calculator (estimate only; nothing is sent anywhere) */
+(function () {
+  "use strict";
+  document.querySelectorAll("[data-calc]").forEach(function (box) {
+    var f = box.querySelector("form"), out = box.querySelector("[data-calc-out]");
+    function calc() {
+      var p = +f.elements.price.value || 0, d = +f.elements.down.value || 0, r = parseFloat(f.elements.apr.value), n = Math.round(+f.elements.term.value || 0);
+      var L = p - d;
+      if (!p) { out.textContent = "Enter the vehicle price to see an estimate."; return; }
+      if (isNaN(r)) { out.textContent = "Enter a rate to see an estimate."; return; }
+      if (L <= 0 || n <= 0 || r < 0 || r > 100) { out.textContent = "Check the numbers: down payment must be less than the price, and the term at least 1 month."; return; }
+      var i = r / 1200, m = i === 0 ? L / n : L * i / (1 - Math.pow(1 + i, -n));
+      out.innerHTML = "Estimated payment: <b>$" + m.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</b> /month for " + n + " months";
+    }
+    f.addEventListener("input", calc);
+    calc();
+  });
+})();

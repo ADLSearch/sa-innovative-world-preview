@@ -3,8 +3,8 @@
   "short_name": "SA Innovative",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#080808",
+  "theme_color": "#080808",
   "icons": [
     {
       "src": "/assets/img/icon-192.png",
