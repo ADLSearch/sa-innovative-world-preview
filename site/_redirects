@@ -1,0 +1,4 @@
+# Short links (302 so the targets can change later). Mirrored in deploy/nginx.conf.
+/apply        https://siw.mycarsonline.com/apply-online/   302
+/finder       https://siw.mycarsonline.com/car-finder/   302
+/live         https://siw.mycarsonline.com/inventory/   302

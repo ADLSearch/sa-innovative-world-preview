@@ -1,0 +1,5 @@
+# Preview build: not for indexing. Set SITE_INDEXABLE=1 on the real domain.
+User-agent: *
+Disallow: /
+
+Sitemap: https://web-production-93066.up.railway.app/sitemap.xml
